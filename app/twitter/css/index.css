@@ -1,0 +1,50 @@
+/* Web page overview */
+header {
+    padding: 80px 0 20px;
+}
+
+@media (min-width: 992px) {
+    header {
+        padding: 80px 0 20px;
+    }
+}
+
+section {
+    padding: 30px 0;
+}
+
+/* Search section */
+#search {
+    padding: 20px 0;
+}
+
+/* Search section: Search city bar */
+#adv-search span {
+    background-color: transparent;
+}
+
+#adv-search input {
+    border-left: 0;
+}
+
+#adv-search {
+    width: auto;
+    margin-bottom: 10px;
+}
+
+/* Search section: Select form */
+#form-search {
+    padding: 0;
+}
+
+#formControlSelectCategory {
+    height: auto;
+}
+
+#formControlSelectCuisine {
+    height: auto;
+}
+
+#formControlSelectEstablishments {
+    height: auto;
+}

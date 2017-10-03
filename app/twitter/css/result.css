@@ -1,0 +1,90 @@
+/* Web page overview */
+header {
+    padding: 70px 0 10px;
+}
+
+@media (min-width: 992px) {
+    header {
+        padding: 70px 0 10px;
+    }
+}
+
+/* Section */
+section {
+    padding: 30px 0;
+}
+
+#googleMap {
+    padding: 0;
+}
+
+/* Restaurant section */
+div.card {
+    margin-bottom: 10px;
+}
+
+div.card .card-body {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+div.card .card-body .card-title {
+    margin-bottom: 0;
+}
+
+div.card a img {
+    height: 100px;
+    width: 100%;
+}
+
+/* Current Weather section */
+#currentWeatherIcon {
+    height: 50px;
+    width: 50px;
+}
+
+/* Map section */
+#map {
+    height: 500px;
+    width: 100%;
+}
+
+.controls {
+    margin-top: 10px;
+    border: 1px solid transparent;
+    border-radius: 2px 0 0 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 30px;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+#origin-input,
+#destination-input {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    margin-left: 12px;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 300px;
+}
+
+#origin-input:focus,
+#destination-input:focus {
+    border-color: #4d90fe;
+}
+
+#mode-selector {
+    color: #fff;
+    background-color: #4d90fe;
+    margin-left: 12px;
+    padding: 5px 11px 0px 11px;
+}
+
+#mode-selector label {
+    font-size: 13px;
+    font-weight: 300;
+}
