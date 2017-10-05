@@ -3,8 +3,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var index = require('./routes/index');
-var info = require('./routes/info');
-var result = require('./routes/result');
 var viewsPath = __dirname + '/views/';
 var app = express();
 
@@ -22,8 +20,6 @@ app.use('/css', express.static(path.join(__dirname, 'css'))); // redirect to my 
 app.use('/js', express.static(path.join(__dirname, 'js'))); // redirect to my custom js folder
 
 // Web page routing
-app.use('/result',result); // Direct to routes/result.js
-app.use('/info', info); // Direct to routes/info.js
 app.use('/',index); // Direct to routes/index.js
 
 // Catch 404 and forward to error handler

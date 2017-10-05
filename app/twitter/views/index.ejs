@@ -4,7 +4,7 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="/css/favicon.ico" type="image/x-icon">
-    <title>Discover Restaurants</title>
+    <title>Twitter Stream Sentiment Analysis</title>
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
@@ -20,7 +20,7 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
     <div class="container">
-        <a class="navbar-brand js-scroll-trigger" href="/">Discover Restaurants!</a>
+        <a class="navbar-brand js-scroll-trigger" href="/">Twitter Stream Sentiment Analysis!</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
                 aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -30,15 +30,18 @@
                 <li class="nav-item">
                     <a class="nav-link js-scroll-trigger" href="#search">Search</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link js-scroll-trigger" href="#tweet">Tweet</a>
+                </li>
             </ul>
         </div>
     </div>
 </nav>
 
-<header class="bg-success text-white">
+<header class="bg-primary text-white">
     <div class="container text-center">
-        <h1>Welcome to Discover Restaurants</h1>
-        <p class="lead">Discover Food and Restaurants from all around the world.</p>
+        <h1>Twitter Streams Sentiment Analysis </h1>
+        <p class="lead">A sentiment analysis web application of Real-time Twitter Stream.</p>
     </div>
 </header>
 
@@ -47,62 +50,70 @@
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <div class="container text-center">
-                    <h5>Search for a city.</h5>
+                    <h5>Enter a keywords.</h5>
                 </div>
-
                 <div class="input-group" id="adv-search">
-                    <span class="input-group-addon fa fa-search" id="search-addon"></span>
-                    <input class="form-control" id="searchCity" placeholder="Search for a city" list="cityNames"/>
-                    <datalist id="cityNames">
-                    </datalist>
+                    <input class="form-control" id="tweetInputText" placeholder="Search Tweets..." />
+                    <!--<datalist id="cityNames">-->
+                    <!--</datalist>-->
                 </div>
 
-                <div class="card" id="card1">
-                    <div class="card-header">
-                        <h5>Find restaurants, cafés, bars and food stalls by selecting the options.</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="form-search" action="/result" method="post">
-                            <div class="form-group row" id="selectedCity">
-                                <div class="col-sm-9">
-                                    <!--type="hidden"-->
-                                    <input class="form-control" type="hidden" id="hiddenSelectedCity" name="hiddenSelectedCity" placeholder="City Not Selected" readonly/>
-                                    <input class="form-control" type="hidden" id="hiddenSelectedCityID" name="hiddenSelectedCityID" placeholder="CityID Not Selected" readonly/>
-                                    <input class="form-control" type="hidden" id="hiddenSelectedCityLat" name="hiddenSelectedCityLat" placeholder="CityLat Not Selected" readonly/>
-                                    <input class="form-control" type="hidden" id="hiddenSelectedCityLon" name="hiddenSelectedCityLon" placeholder="CityLon Not Selected" readonly/>
-                                    <input class="form-control" type="hidden" id="hiddenSelectedCategory" name="hiddenSelectedCategory" placeholder="Category Not Selected" readonly/>
-                                    <input class="form-control" type="hidden" id="hiddenSelectedCuisine" name="hiddenSelectedCuisine" placeholder="Cuisine Not Selected" readonly/>
-                                    <input class="form-control" type="hidden" id="hiddenSelectedEstablishments" name="hiddenSelectedEstablishments" placeholder="Establishment Not Selected" readonly/>
-                                </div>
-                            </div>
-                            <div class="form-group row" id="searchCategory">
-                                <label for="formControlSelectCategory" class="col-sm-3 col-form-label">Category</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" id="formControlSelectCategory" name="formControlSelectCategory" disabled>
-                                        <option>Options not selected</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group row" id="searchCuisine">
-                                <label for="formControlSelectCuisine" class="col-sm-3 col-form-label">Cuisine</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" id="formControlSelectCuisine" name="formControlSelectCuisine" disabled>
-                                        <option>Options not selected</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group row" id="searchEstablishments">
-                                <label for="formControlSelectEstablishments" class="col-sm-3 col-form-label">Establishments</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" id="formControlSelectEstablishments" name="formControlSelectEstablishments" disabled>
-                                        <option>Options not selected</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary float-right" id="formSubmit" disabled>Submit</button>
-                        </form>
-                    </div>
-                </div>
+                <!--<div class="card" id="card1">-->
+                    <!--<div class="card-header">-->
+                        <!--<h5>Find restaurants, cafés, bars and food stalls by selecting the options.</h5>-->
+                    <!--</div>-->
+                    <!--<div class="card-body">-->
+                        <!--<form id="form-search" action="/result" method="post">-->
+                            <!--<div class="form-group row" id="selectedCity">-->
+                                <!--<div class="col-sm-9">-->
+                                    <!--&lt;!&ndash;type="hidden"&ndash;&gt;-->
+                                    <!--<input class="form-control" type="hidden" id="hiddenSelectedCity" name="hiddenSelectedCity" placeholder="City Not Selected" readonly/>-->
+                                    <!--<input class="form-control" type="hidden" id="hiddenSelectedCityID" name="hiddenSelectedCityID" placeholder="CityID Not Selected" readonly/>-->
+                                    <!--<input class="form-control" type="hidden" id="hiddenSelectedCityLat" name="hiddenSelectedCityLat" placeholder="CityLat Not Selected" readonly/>-->
+                                    <!--<input class="form-control" type="hidden" id="hiddenSelectedCityLon" name="hiddenSelectedCityLon" placeholder="CityLon Not Selected" readonly/>-->
+                                    <!--<input class="form-control" type="hidden" id="hiddenSelectedCategory" name="hiddenSelectedCategory" placeholder="Category Not Selected" readonly/>-->
+                                    <!--<input class="form-control" type="hidden" id="hiddenSelectedCuisine" name="hiddenSelectedCuisine" placeholder="Cuisine Not Selected" readonly/>-->
+                                    <!--<input class="form-control" type="hidden" id="hiddenSelectedEstablishments" name="hiddenSelectedEstablishments" placeholder="Establishment Not Selected" readonly/>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div class="form-group row" id="searchCategory">-->
+                                <!--<label for="formControlSelectCategory" class="col-sm-3 col-form-label">Category</label>-->
+                                <!--<div class="col-sm-9">-->
+                                    <!--<select class="form-control" id="formControlSelectCategory" name="formControlSelectCategory" disabled>-->
+                                        <!--<option>Options not selected</option>-->
+                                    <!--</select>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div class="form-group row" id="searchCuisine">-->
+                                <!--<label for="formControlSelectCuisine" class="col-sm-3 col-form-label">Cuisine</label>-->
+                                <!--<div class="col-sm-9">-->
+                                    <!--<select class="form-control" id="formControlSelectCuisine" name="formControlSelectCuisine" disabled>-->
+                                        <!--<option>Options not selected</option>-->
+                                    <!--</select>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<div class="form-group row" id="searchEstablishments">-->
+                                <!--<label for="formControlSelectEstablishments" class="col-sm-3 col-form-label">Establishments</label>-->
+                                <!--<div class="col-sm-9">-->
+                                    <!--<select class="form-control" id="formControlSelectEstablishments" name="formControlSelectEstablishments" disabled>-->
+                                        <!--<option>Options not selected</option>-->
+                                    <!--</select>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<button type="submit" class="btn btn-primary float-right" id="formSubmit" disabled>Submit</button>-->
+                        <!--</form>-->
+                    <!--</div>-->
+                <!--</div>-->
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="tweet" class="bg-primary text-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+
             </div>
         </div>
     </div>
@@ -111,7 +122,7 @@
 <!-- Footer -->
 <footer class="py-5 bg-dark">
     <div class="container">
-        <p class="m-0 text-center text-white">Copyright &copy; YeeChen Fong 2017</p>
+        <p class="m-0 text-center text-white">Copyright &copy; YeeChen Fong & PengYuan Ge 2017</p>
     </div>
     <!-- /.container -->
 </footer>
