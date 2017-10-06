@@ -33,118 +33,100 @@
         $(this).find('.mega-dropdown-menu').stop(true, true).delay(200).fadeOut(200);
     });
 
-    // Pass selected option into hidden value to allow
-    // the option's id to be pass into the POST.
-    $('#formControlSelectCategory').on('change', function () {
-        var selected = $(':selected', this).prop('id');
-        $('#hiddenSelectedCategory').val(selected);
-    });
-    $('#formControlSelectCuisine').on('change', function () {
-        var selected = $(':selected', this).prop('id');
-        $('#hiddenSelectedCuisine').val(selected);
-    });
-    $('#formControlSelectEstablishments').on('change', function () {
-        var selected = $(':selected', this).prop('id');
-        $('#hiddenSelectedEstablishments').val(selected);
-    });
-
-    // Update City List when user searches for a city;
-    // Select city to create form
-    // Ajax request, route to routes/index -> Zomato API
-    // -> return to routes/index -> return to js/index
-    $('#searchCity').on('input', function (event) {
-        var input = $('#searchCity').val();
-
-        var city = "";
-        var cityId = 0;
-
-        if ($('#cityNames option').filter(function () {
-                if(this.value === input){
-                    city = this.value;
-                    cityId = this.id;
-                    return this.value === input;
-                }
-            }).length) {
-
-            // Get Zomato city parameters
-            $.ajax({
-                url: '/getCity',
-                type: 'GET',
-                cache: true,
-                data: { city: city, cityID: cityId },
-                success: function (data) {
-                    var allID = "0";
-                    var allName = "All Options";
-
-                    // Selected City
-                    $('#hiddenSelectedCity').val(data.latLon[0].cityName);
-                    $('#hiddenSelectedCityID').val(data.latLon[0].cityID);
-                    $('#hiddenSelectedCityLat').val(data.latLon[0].lat);
-                    $('#hiddenSelectedCityLon').val(data.latLon[0].lon);
-
-                    // Select Category
-                    $('#formControlSelectCategory').empty();
-                    $('#formControlSelectCategory').append("<option id='" + allID + "' value='" + allName + "' selected>" + allName + "</option>");
-                    for (var i = 0; i < data.categories.length; i++) {
-                        // Drop down List
-                        $('#formControlSelectCategory').append("<option id='" + data.categories[i].id + "' value='" + data.categories[i].name + "'>" + data.categories[i].name + "</option>");
-                    }
-
-                    // Select Cuisine
-                    $('#formControlSelectCuisine').empty();
-                    $('#formControlSelectCuisine').append("<option id='" + allID + "' value='" + allName + "' selected>" + allName + "</option>");
-                    for (var i = 0; i < data.cuisines.length; i++) {
-                        // Drop down List
-                        $('#formControlSelectCuisine').append("<option id='" + data.cuisines[i].id + "' value='" + data.cuisines[i].name + "'>" + data.cuisines[i].name + "</option>");
-                    }
-
-                    // Select Establishments
-                    $('#formControlSelectEstablishments').empty();
-                    $('#formControlSelectEstablishments').append("<option id='" + allID + "' value='" + allName + "' selected>" + allName + "</option>");
-                    for (var i = 0; i < data.establishments.length; i++) {
-                        // Drop down List
-                        $('#formControlSelectEstablishments').append("<option id='" + data.establishments[i].id + "' value='" + data.establishments[i].name + "'>" + data.establishments[i].name + "</option>");
-                    }
-
-                    // Initialise the All options into the hidden inputs
-                    $('#hiddenSelectedCategory').val(allID);
-                    $('#hiddenSelectedCuisine').val(allID);
-                    $('#hiddenSelectedEstablishments').val(allID);
-
-                    // Unlock the form
-                    $('#formControlSelectCategory').prop('disabled', false);
-                    $('#formControlSelectCuisine').prop('disabled', false);
-                    $('#formControlSelectEstablishments').prop('disabled', false);
-                    $('#formSubmit').prop('disabled', false);
-                }
-                , error: function (jqXHR, textStatus, err) {
-                    console.log('Text Status ' + textStatus + ', Err ' + err)
-                }
-            });
-        } else {
-            // Lock the form
-            $('#formControlSelectCategory').prop('disabled', true);
-            $('#formControlSelectCuisine').prop('disabled', true);
-            $('#formControlSelectEstablishments').prop('disabled', true);
-            $('#formSubmit').prop('disabled', true);
-
-            // Continue Update City List
-            $.ajax({
-                url: '/searchCity',
-                type: 'GET',
-                cache: true,
-                data: {city: input},
-                success: function (data) {
-                    $('#cityNames').empty();
-                    for (var i = 0; i < data.length; i++) {
-                        // Drop down List
-                        $('#cityNames').append("<option id='" + data[i].id + "' value='" + data[i].name + "'>");
-                    }
-                }
-                , error: function (jqXHR, textStatus, err) {
-                    console.log('Text Status ' + textStatus + ', Err ' + err)
-                }
-            });
-        }
-    });
 })(jQuery); // End of use strict
+
+// Socket Io client
+
+// var usercount = '<%= title %>';
+
+//Connect to the socket
+var socket = io();
+var $ = jQuery.noConflict();
+
+// Add/Remove query keywords
+$(function () {
+    $('#activator').click(function () {
+        $('#box').animate({'top': '0px'}, 500);
+    });
+    $('#boxclose').click(function () {
+        $('#box').animate({'top': '-700px'}, 500);
+    });
+    $('#tweetInputText').tagsInput();
+});
+
+
+// Load new tweets
+$(document).ready(function () {
+    //Hide (Collapse) the toggle containers on load
+    $(".toggle_container").hide();
+    //Switch the "Open" and "Close" state per click then slide up/down (depending on open/close state)
+    $(".trigger").click(function () {
+        $(this).toggleClass("active").next().slideToggle("slow");
+        return false; //Prevent the browser jump to the link anchor
+    });
+
+    // Loaded Images Function
+    var $tiles = $('#tiles'),
+        $handler = $('li', $tiles),
+        $main = $('#main'),
+        $window = $(window),
+        $document = $(document),
+        options = {
+            autoResize: true, // This will auto-update the layout when the browser window is resized.
+            container: $main, // Optional, used for some extra CSS styling
+            offset: 20, // Optional, the distance between grid items
+            itemWidth: 280 // Optional, the width of a grid item
+        };
+
+    /**
+     * Reinitializes the wookmark handler after all images have loaded
+     */
+    function applyLayout() {
+        $tiles.imagesLoaded(function () {
+            // Destroy the old handler
+            if ($handler.wookmarkInstance) {
+                $handler.wookmarkInstance.clear();
+            }
+
+            // Create a new layout handler.
+            $handler = $('li', $tiles);
+            $handler.wookmark(options);
+        });
+    }
+
+    // Get the result of tweet
+    socket.on("resultTweet", function (data) {
+        $('#tiles').append(data);
+        applyLayout();
+    });
+});
+
+// Bind the enter key to start the tweet query searching method
+function enterBindKey(event) {
+    if (event.keyCode == 13) {
+        searchTweet();
+    }
+}
+
+//Query for particular tag of tweet
+function searchTweet(value) {
+    // Get the search value
+    var SearchValue = document.getElementById('tweetInputText').value;
+
+    //Invoke the socket to search the particular tweet
+    if (value !== '') {
+        socket.emit("searchTweet", value);
+    }
+}
+
+//Remove particular of tag of tweet
+function removeTagTweet(value) {
+    socket.emit("removeTagTweet", value);
+}
+
+function removeAll() {
+    $tiles = $('#tiles');
+    socket.emit("clearAllTag", "");
+    $tiles.empty();
+    applyLayout();
+}

@@ -5,9 +5,17 @@ var bodyParser = require('body-parser');
 var index = require('./routes/index');
 var viewsPath = __dirname + '/views/';
 var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 
 // EJS View engine setup, which will look into the folder "views"
 app.set('view engine', 'ejs');
+
+// Socket IO
+app.use(function(req, res, next){
+    res.io = io;
+    next();
+});
 
 // Client side body and cookie parsing
 app.use(bodyParser.json());
@@ -40,4 +48,4 @@ app.use(function(err, req, res, next) {
     res.sendFile(viewsPath + "404.html");
 });
 
-module.exports = app;
+module.exports = {app: app, server: server};
