@@ -164,6 +164,31 @@ function ResultOfTweet(tweet, socket) {
             '</div>' +
             '</li>';
 
+    // <% if(restaurantID){ %>
+    //     <% for(var i = 0; i < restaurantID.length; i++){ %>
+    //         <div class="col-lg-6 col-md-6 col-sm-12">
+    //                 <div class="card">
+    //                 <a href="/info/<%= restaurantID[i] %>">
+    //                 <img src="<%= restaurantThumbnail[i] %>" alt="No restaurant Image" style="height: 100px; width: 100%"  onerror="this.onerror=null;this.src='https://placehold.it/250x100?text=No Image';">
+    //                 </a>
+    //                 <div class="card-body">
+    //                 <div class="container">
+    //                 <div class="row">
+    //                 <h6 class="card-title"><a href="/info/<%= restaurantID[i] %>/"><%= restaurantName[i] %></a></h6>
+    //             </div>
+    //             <div class="row">
+    //                 <p class="card-text"><small class="text-muted"><%= restaurantCuisine[i] %></small></p>
+    //             </div>
+    //             <div class="row">
+    //                 <p class="card-text"><small class="text-black"><%= restaurantLocationLocality[i] %></small></p>
+    //             </div>
+    //             </div>
+    //             </div>
+    //             </div>
+    //             </div>
+    //             <% } %>
+    //     <% } %>
+
         console.log(tweet.text);
         socket.emit("resultTweet", FormattedTweets);
     }
