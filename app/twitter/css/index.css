@@ -32,19 +32,24 @@ section {
     margin-bottom: 10px;
 }
 
-/* Search section: Select form */
-#form-search {
-    padding: 0;
-}
+/*!* Search section: Select form *!*/
+/*#form-search {*/
+    /*padding: 0;*/
+/*}*/
 
-#formControlSelectCategory {
-    height: auto;
-}
+/*#formControlSelectCategory {*/
+    /*height: auto;*/
+/*}*/
 
-#formControlSelectCuisine {
-    height: auto;
-}
+/*#formControlSelectCuisine {*/
+    /*height: auto;*/
+/*}*/
 
-#formControlSelectEstablishments {
-    height: auto;
+/*#formControlSelectEstablishments {*/
+    /*height: auto;*/
+/*}*/
+
+/* Tweet section: Tweet Cards */
+div.card {
+    margin-bottom: 10px;
 }

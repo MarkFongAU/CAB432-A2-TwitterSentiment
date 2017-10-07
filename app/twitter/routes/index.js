@@ -1,10 +1,13 @@
 const express = require('express');
-var twitterAPIKey = require('../config');
-var Twitter = require('node-tweet-stream');
-var sentiment = require('sentiment');
+const twitterAPIKey = require('../config');
+const Twitter = require('node-tweet-stream');
+const sentiment = require('sentiment');
+const dateFormat = require('dateformat');
 const async = require('async');
 const request = require('request');
 const viewsPath = __dirname + '/views/';
+// var server = require('../app').server;
+// var io = require('socket.io')(server);
 
 var router = express.Router();
 
@@ -45,8 +48,14 @@ router.get('/', function (req, res) {
         // Determine the connection has been established
         console.log("User " + socket.id + " is connected");
 
+        // Disconnect/Close Connection of socket between server and client when browser close/refresh web page
+        socket.on('disconnect', function () {
+            console.log("User " + socket.id + " disconnected");
+            socket.disconnect(0);
+        });
+
         // Search the tweets
-        socket.on("searchTweet", function (data) {
+        socket.on("searchTagTweet", function (data) {
             var exist = false;
 
             for (var i = 0; i < socket.searchMultipleTags.length; i++) {
@@ -141,7 +150,7 @@ function ResultOfTweet(tweet, socket) {
 
         createdTime = dateFormat(createdTime, "yyyy-mm-dd h:MM TT");
 
-        var FormattedTweets = '<li class = "' + mood + '" id ="' + emotion + '">' +
+        var FormattedTweets1 = '<li class = "' + mood + '" id ="' + emotion + '">' +
             '<a href="' + profileUrl + '" target="_blank">' +
             '<img src="' + url + '" style="width: 300px; height:100px"></a>' +
             '<div class="post-info">' +
@@ -164,243 +173,40 @@ function ResultOfTweet(tweet, socket) {
             '</div>' +
             '</li>';
 
-    // <% if(restaurantID){ %>
-    //     <% for(var i = 0; i < restaurantID.length; i++){ %>
-    //         <div class="col-lg-6 col-md-6 col-sm-12">
-    //                 <div class="card">
-    //                 <a href="/info/<%= restaurantID[i] %>">
-    //                 <img src="<%= restaurantThumbnail[i] %>" alt="No restaurant Image" style="height: 100px; width: 100%"  onerror="this.onerror=null;this.src='https://placehold.it/250x100?text=No Image';">
-    //                 </a>
-    //                 <div class="card-body">
-    //                 <div class="container">
-    //                 <div class="row">
-    //                 <h6 class="card-title"><a href="/info/<%= restaurantID[i] %>/"><%= restaurantName[i] %></a></h6>
-    //             </div>
-    //             <div class="row">
-    //                 <p class="card-text"><small class="text-muted"><%= restaurantCuisine[i] %></small></p>
-    //             </div>
-    //             <div class="row">
-    //                 <p class="card-text"><small class="text-black"><%= restaurantLocationLocality[i] %></small></p>
-    //             </div>
-    //             </div>
-    //             </div>
-    //             </div>
-    //             </div>
-    //             <% } %>
-    //     <% } %>
+        var FormattedTweets = '<div class="col-lg-6 col-md-6 col-sm-6">' +
+            '<div class="card">' +
+            '<div class="card-body">' +
+            '<div class="container">' +
+            '<div class="row">' +
+            '<div class="col-lg-4 col-md-4 col-sm-4">' +
+            '<a href="' + profileUrl + '" target="_blank">' +
+            '<img src="' + url + '" class="rounded float-left" alt="No Image" style="height: 100px; width: 100%">' +
+            '</a>' +
+            '</div>' +
+            '<div class="col-lg-8 col-md-8 col-sm-8">' +
+            '<img src ="' + tweet.user.profile_image_url + '" style="width:50px; height:50px; float:left; border-radius: 50%">' +
+            '<h3><a href="' + profileUrl + '" target="_blank">' +
+            tweet.user.name + '</a></h3>' +
+            '<span class="fa fa-calendar-o">' + createdTime + '</span>' +
+            '<br/>' +
+            '<span class="fa fa-map-pin">' + urlLocation + '</span>' +
+            '</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<p>' + tweet.text + '</p>' +
+            '</div>' +
+            '<div class="row" style="background-color:' + color + '">' +
+            '<p5>Rating: ' + rating + '</p5>' +
+            '<p5>User friend count: ' + tweet.user.friends_count + '</p5>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
 
-        console.log(tweet.text);
+        // console.log(tweet.text);
         socket.emit("resultTweet", FormattedTweets);
     }
 }
-
-
-// // GET city parameters dynamically
-// router.get('/searchCity', function (clientReq, clientRes) {
-//     console.log("Input:" + clientReq.query.city);
-//
-//     var zomato = {
-//         apikey: "41545c45de7c80b47f11e144fb5f64cf"
-//     };
-//
-//     function createZomatoCityOptions(clientReq, apiType) {
-//         var defaultOptions = {
-//             url: 'https://developers.zomato.com/api/v2.1/',
-//             method: 'GET',
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'user-key': zomato.apikey // Zomato API Key
-//             },
-//             json: true
-//         };
-//
-//         var str = apiType + '?' +
-//             'q=' + clientReq.query.city;
-//         defaultOptions.url += str;
-//         return defaultOptions;
-//     }
-//
-//     var cityOptions = createZomatoCityOptions(clientReq, "cities");
-//
-//     const options= [
-//         cityOptions
-//     ];
-//
-//     function multipleGet(options, callback) {
-//         request(options,
-//             function(err, res, body) {
-//                 callback(err, body);
-//             }
-//         );
-//     }
-//
-//     async.map(options, multipleGet, function (err, res) {
-//         if (err) return console.log(err);
-//
-//         var jObject;
-//
-//         var cities = [];
-//         for (var locationIndex in res[0].location_suggestions){
-//             jObject = {
-//                 id: res[0].location_suggestions[locationIndex].id,
-//                 name: res[0].location_suggestions[locationIndex].name
-//             };
-//             cities.push(jObject);
-//         }
-//         clientRes.send(cities);
-//     });
-// });
-//
-// // GET parameters to be displayed in the form
-// router.get('/getCity', function (clientReq, clientRes) {
-//     var zomato = {
-//         apikey: "41545c45de7c80b47f11e144fb5f64cf"
-//     };
-//
-//     function createZomatoCityLatLon(clientReq, apiType, count) {
-//         var defaultOptions = {
-//             url: 'https://developers.zomato.com/api/v2.1/',
-//             method: 'GET',
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'user-key': zomato.apikey // Zomato API Key
-//             },
-//             json: true
-//         };
-//
-//         var str = apiType + '?' +
-//             'query=' + clientReq.query.city +
-//             '&count=' + count;
-//         defaultOptions.url += str;
-//         return defaultOptions;
-//     }
-//
-//     function createZomatoCityCategories(clientReq, apiType) {
-//         var defaultOptions = {
-//             url: 'https://developers.zomato.com/api/v2.1/',
-//             method: 'GET',
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'user-key': zomato.apikey // Zomato API Key
-//             },
-//             json: true
-//         };
-//
-//         var str = apiType;
-//         defaultOptions.url += str;
-//         return defaultOptions;
-//     }
-//     function createZomatoCityCuisines(clientReq, apiType) {
-//         var defaultOptions = {
-//             url: 'https://developers.zomato.com/api/v2.1/',
-//             method: 'GET',
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'user-key': zomato.apikey // Zomato API Key
-//             },
-//             json: true
-//         };
-//
-//         var str = apiType + '?' +
-//             'city_id=' + clientReq.query.cityID;
-//         defaultOptions.url += str;
-//         return defaultOptions;
-//     }
-//     function createZomatoCityEstablishments(clientReq, apiType) {
-//         var defaultOptions = {
-//             url: 'https://developers.zomato.com/api/v2.1/',
-//             method: 'GET',
-//             headers: {
-//                 'Accept': 'application/json',
-//                 'user-key': zomato.apikey // Zomato API Key
-//             },
-//             json: true
-//         };
-//
-//         var str = apiType + '?' +
-//             'city_id=' + clientReq.query.cityID;
-//         defaultOptions.url += str;
-//         return defaultOptions;
-//     }
-//
-//     var cityLatLon = createZomatoCityLatLon(clientReq, "locations", "1");
-//     var optionsCategories = createZomatoCityCategories(clientReq, "categories");
-//     var optionsCuisines = createZomatoCityCuisines(clientReq, "cuisines");
-//     var optionsEstablishments = createZomatoCityEstablishments(clientReq, "establishments");
-//
-//     const options= [
-//         cityLatLon,
-//         optionsCategories,
-//         optionsCuisines,
-//         optionsEstablishments
-//     ];
-//
-//     function multipleGet(options, callback) {
-//         request(options,
-//             function(err, res, body) {
-//                 callback(err, body);
-//             }
-//         );
-//     }
-//
-//     async.map(options, multipleGet, function (err, res){
-//         if (err) return console.log(err);
-//
-//         var responseArray = {};
-//         var jObject;
-//
-//         var latLon = [];
-//         for (var locationIndex in res[0].location_suggestions){
-//             jObject = {
-//                 cityName: res[0].location_suggestions[locationIndex].city_name,
-//                 cityID: res[0].location_suggestions[locationIndex].city_id,
-//                 lat: res[0].location_suggestions[locationIndex].latitude,
-//                 lon: res[0].location_suggestions[locationIndex].longitude
-//             };
-//             latLon.push(jObject);
-//         }
-//         // console.log(latLon);
-//
-//         var categories = [];
-//         for (var categoryIndex in res[1].categories){
-//             jObject = {
-//                 id: res[1].categories[categoryIndex].categories.id,
-//                 name: res[1].categories[categoryIndex].categories.name
-//             };
-//             categories.push(jObject);
-//         }
-//         // console.log(categories);
-//
-//         var cuisines = [];
-//         for (var cuisineIndex in res[2].cuisines){
-//             jObject = {
-//                 id: res[2].cuisines[cuisineIndex].cuisine.cuisine_id,
-//                 name: res[2].cuisines[cuisineIndex].cuisine.cuisine_name
-//             };
-//             cuisines.push(jObject);
-//         }
-//         // console.log(cuisines);
-//
-//         var establishments = [];
-//         for (var establishmentIndex in res[3].establishments){
-//             jObject = {
-//                 id: res[3].establishments[establishmentIndex].establishment.id,
-//                 name: res[3].establishments[establishmentIndex].establishment.name
-//             };
-//             establishments.push(jObject);
-//         }
-//         // console.log(establishments);
-//
-//         responseArray = {
-//             latLon: latLon,
-//             categories: categories,
-//             cuisines: cuisines,
-//             establishments: establishments
-//         };
-//         // console.log(responseArray);
-//
-//         clientRes.send(responseArray);
-//     });
-// });
 
 module.exports = router;

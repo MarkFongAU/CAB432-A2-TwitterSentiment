@@ -86,7 +86,7 @@
 				value = jQuery.trim(value);
 
                 // Call Search tag tweet Socket Io function
-                // searchTweet(value);
+                searchTagTweet(value);
 
 				if (options.unique) {
 					var skipTag = $(this).tagExist(value);
@@ -185,8 +185,8 @@
       interactive:true,
       defaultText:'Search for Tweets...',
       minChars:0,
-      width:'auto',
-      height:'auto',
+      width:'100%',
+      height:'100%',
       autocomplete: {selectFirst: false },
       hide:true,
       delimiter: ',',
@@ -243,7 +243,7 @@
 			markup = markup + '</div><div class="tags_clear"></div></div>';
 
 			$(markup).insertAfter(this);
-            $(data.fake_input).css('width','200px');
+            // $(data.fake_input).css('width',settings.width);
 			$(data.holder).css('width',settings.width);
 			$(data.holder).css('min-height',settings.height);
 			$(data.holder).css('height',settings.height);
