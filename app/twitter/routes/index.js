@@ -1,8 +1,9 @@
 const express = require('express');
-const twitterAPIKey = require('../config');
+const twitterAPIKey = require('../twitterapiconfig');
 const Twitter = require('node-tweet-stream');
 const sentiment = require('sentiment');
 const dateFormat = require('dateformat');
+var AWS = require('aws-sdk');
 const async = require('async');
 const request = require('request');
 const viewsPath = __dirname + '/views/';
@@ -10,6 +11,43 @@ const viewsPath = __dirname + '/views/';
 // var io = require('socket.io')(server);
 
 var router = express.Router();
+
+AWS.config = new AWS.Config();
+AWS.config.loadFromPath('../awsconfig.json');
+
+var s3 = new AWS.S3();
+
+// Bucket names must be unique across all S3 users
+var myBucket = 'cab432markfrank';
+var myKey = 'myBucketKey';
+
+s3.createBucket({Bucket: myBucket}, function(err, data) {
+
+    if (err) {
+
+        console.log(err);
+
+    } else {
+
+        params = {Bucket: myBucket, Key: myKey, Body: 'Hello!'};
+
+        s3.putObject(params, function(err, data) {
+
+            if (err) {
+
+                console.log(err)
+
+            } else {
+
+                console.log("Successfully uploaded data to myBucket/myKey");
+
+            }
+
+        });
+
+    }
+
+});
 
 // Twitter Tag/Keywords
 var multiTag = [];
