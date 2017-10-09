@@ -98,7 +98,11 @@ $(document).ready(function () {
     socket.on("resultTweet", function (data) {
         $('#tweetTiles').append(data);
         // applyLayout();
+
+        // Add number of tweets coming in and display in the line chart
     });
+
+
 });
 
 // Bind the enter key to start the tweet query searching method
