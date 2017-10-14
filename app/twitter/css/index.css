@@ -18,7 +18,7 @@ section {
     padding: 20px 0;
 }
 
-/* Search section: Search city bar */
+/* Search section: Search query bar */
 #adv-search span {
     background-color: transparent;
 }
@@ -32,24 +32,12 @@ section {
     margin-bottom: 10px;
 }
 
-/*!* Search section: Select form *!*/
-/*#form-search {*/
-    /*padding: 0;*/
-/*}*/
-
-/*#formControlSelectCategory {*/
-    /*height: auto;*/
-/*}*/
-
-/*#formControlSelectCuisine {*/
-    /*height: auto;*/
-/*}*/
-
-/*#formControlSelectEstablishments {*/
-    /*height: auto;*/
-/*}*/
-
 /* Tweet section: Tweet Cards */
 div.card {
     margin-bottom: 10px;
+}
+
+#tweetTiles {
+    height: 500px;
+    overflow-y: scroll;
 }

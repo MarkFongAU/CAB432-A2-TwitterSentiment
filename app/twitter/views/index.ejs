@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.min.css">
 
     <!-- Custom JQuery Tag Input CSS for this theme -->
-    <link rel="stylesheet" type="text/css" href="/css/jquery.tagsinput.css" />
+    <link rel="stylesheet" type="text/css" href="/css/jquery.tagsinput.css"/>
 
     <!-- Custom styles for this template -->
     <link rel='stylesheet' href='/css/index.css'/>
@@ -60,12 +60,12 @@
                 </div>
                 <div class="input-group" id="adv-search">
                     <span class="input-group-addon fa fa-search" id="search-addon"></span>
-                    <input class="form-control" id="tweetInputText" placeholder="" />
+                    <input class="form-control" id="tweetInputText" placeholder=""/>
                     <!--<datalist id="cityNames">-->
                     <!--</datalist>-->
                 </div>
                 <!--<div class="input-group" id="adv-search">-->
-                    <!--<input class="form-control" id="tweet" placeholder="Search Tweets..." />-->
+                <!--<input class="form-control" id="tweet" placeholder="Search Tweets..." />-->
                 <!--</div>-->
             </div>
         </div>
@@ -75,8 +75,88 @@
 <section id="visualisation" class="bg-success text-white">
     <div class="container">
         <div class="row">
-            <div class="col-lg-12 mx-auto">
-                D3js chart HERE
+            <div class="col-lg-8 mx-auto">
+                <div class="container text-center"><h5>Twitter Activity</h5></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="card text-center text-dark">
+                    <div class="card-header">
+                        <b>Sentiment Activity</b>
+                    </div>
+
+                    <!-- Overall Sentiment Chart -->
+                    <div class="card-body">
+                        <canvas id="chartSentiment"></canvas>
+                    </div>
+
+                    <!-- Remove the data set of the chart -->
+                    <div class="card-footer">
+                        <button class="btn btn-danger" id="clearChartSentiment">Clear Chart</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12 col-sm-12">
+                <div class="card text-center text-dark">
+                    <div class="card-header">
+                        <b>Sentiment Topic</b>
+                    </div>
+
+                    <!-- Topic Chart -->
+                    <div class="card-body">
+                        <canvas id="chartTopic"></canvas>
+                    </div>
+
+                    <!-- Remove the data set of the chart -->
+                    <div class="card-footer">
+                        <button class="btn btn-danger" id="clearChartTopic">Clear Chart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-3 col-sm-6">
+                <!-- Overall Total Tweets -->
+                <div class="card text-center text-dark">
+                    <div class="card-header" id="totalTweetCount">
+                        Total Tweets: <b style="color: #00b2e8">0</b>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6">
+                <!-- Overall Positive Tweets -->
+                <div class="card text-center text-dark">
+                    <div class="card-header" id="positiveTweetCount">
+                        Positive Tweets: <b style="color: #00c869">0</b>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6">
+                <!-- Overall Neutral Tweets -->
+                <div class="card text-center text-dark">
+                    <div class="card-header" id="neutralTweetCount">
+                        Neutral Tweets: <b style="color: #fffd00">0</b>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6">
+                <!-- Overall Negative Tweets -->
+                <div class="card text-center text-dark">
+                    <div class="card-header" id="negativeTweetCount">
+                        Negative Tweets: <b style="color: #ff1100">0</b>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 mx-auto">
+                <!-- Overall Sentiment Status -->
+                <div class="card text-center text-dark">
+                    <div class="card-header" id="overallSentiment">
+                        <b>Overall Sentiment: </b>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -84,13 +164,25 @@
 
 <section id="tweet" class="bg-primary text-dark">
     <div class="container">
-        <!--<div class="row">-->
-            <!--<div class="col-lg-10 mx-auto">-->
+        <div class="row">
+            <div class="col-lg-12 mx-auto text-white">
+                <div class="container text-center">
+                    <h5>Tweet Streams</h5>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 mx-auto">
+                <div class="card text-dark">
+                    <div class="card-header text-center">
+                        <b>Twitter Stream</b>
+                    </div>
 
-            <!--</div>-->
-        <!--</div>-->
-        <div class="row" id="tweetTiles">
-
+                    <!-- Add a scrollable tweet stream -->
+                    <div class="row" id="tweetTiles">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -103,17 +195,20 @@
     <!-- /.container -->
 </footer>
 
-<!-- Bootstrap Core JavaScript, JQuery, Popper, Socket IO -->
+<!-- Bootstrap Core JavaScript, JQuery, Popper, Socket IO, D3 -->
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/popper/popper.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js"></script>
 
 <!-- Plugin JavaScript -->
 <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 <script src="/vendor/jquery-ui/jquery-ui.min.js"></script>
 
 <!-- Custom JavaScript for this theme -->
+<!--<script src="/js/realTimeChart.js"></script>-->
 <script src="/js/index.js"></script>
 
 <!-- Custom JQuery Tag Input for this theme -->
