@@ -28,9 +28,6 @@ const s3Conf = {
     "S3_REGION": "us-west-2"
 };
 
-// Bucket created status
-var bucketCreated = false;
-
 // Number of users/ web pages online
 var numUsers = 0;
 
@@ -58,7 +55,6 @@ module.exports = function (io) {
             console.log("User " + socket.id + " is connected");
             numUsers++;
             console.log("User currently online: " + numUsers);
-            console.log("Bucket status: " + bucketCreated);
         });
 
         // Disconnect/Close Connection of socket between server and client when browser close/refresh web page
@@ -249,7 +245,7 @@ module.exports = function (io) {
 
         // Sentiment Analysis on tweet
         sentiment(fullText, function (err, result) {
-            
+
             // Assign rating
             rating = result.score;
 
