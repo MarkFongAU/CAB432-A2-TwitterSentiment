@@ -21,12 +21,6 @@ app.use('/vendor', express.static(path.join(__dirname, 'vendor'))); // redirect 
 app.use('/css', express.static(path.join(__dirname, 'css'))); // redirect to my custom css folder
 app.use('/js', express.static(path.join(__dirname, 'js'))); // redirect to my custom js folder
 
-// Socket IO
-// app.use(function(req, res, next){
-//     res.io = io;
-//     next();
-// });
-
 // Web page routing
 app.use('/',index); // Direct to routes/index.js
 

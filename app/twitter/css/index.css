@@ -38,6 +38,7 @@ div.card {
 }
 
 #tweetTiles {
-    height: 500px;
+    height: 450px;
     overflow-y: scroll;
+    width:100%;
 }

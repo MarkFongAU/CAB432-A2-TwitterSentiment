@@ -41,7 +41,6 @@ var $ = jQuery.noConflict();
 
 // Connect to the socket
 socket.emit("connected");
-socket.emit("createBucket");
 
 // Chart JS Live Charts
 // Total Tweet Activity Counts
@@ -106,13 +105,6 @@ var lineChartData = {
 var barChartData = {
     labels: [],
     datasets: [{
-        //     label: 'Total Tweets',
-        //     fill: false,
-        //     backgroundColor: colorTotalTweet,
-        //     borderColor: colorTotalTweet,
-        //     borderWidth: 1,
-        //     data: []
-        // }, {
         label: 'Negative Tweets',
         fill: false,
         backgroundColor: colorNegativeTweet,
@@ -202,8 +194,9 @@ var barChart = new Chart(ctx, {
     }
 });
 
-// Add/Remove query keywords
+// Javascript Event
 $(function () {
+    // Clear chart (Line Chart)
     $('#clearChartSentiment').click(function () {
         lineChartData.labels.splice(0, lineChartData.labels.length);
         lineChartData.datasets[0].data.splice(0, lineChartData.datasets[0].data.length);
@@ -212,6 +205,8 @@ $(function () {
         lineChartData.datasets[3].data.splice(0, lineChartData.datasets[3].data.length);
         lineChart.update();
     });
+
+    // Clear chart (Bar Chart)
     $('#clearChartTopic').click(function () {
         tweetTopics.splice(0, tweetTopics.length);
         barChartData.labels.splice(0, barChartData.labels.length);
@@ -220,51 +215,13 @@ $(function () {
         barChartData.datasets[2].data.splice(0, barChartData.datasets[2].data.length);
         barChart.update();
     });
-    // $('#boxclose').click(function () {
-    //     $('#box').animate({'top': '-700px'}, 500);
-    // });
+
+    // Add/Remove query keywords
     $('#tweetInputText').tagsInput();
 });
 
 // Load new tweets
 $(document).ready(function () {
-    // //Hide (Collapse) the toggle containers on load
-    // $(".toggle_container").hide();
-    // //Switch the "Open" and "Close" state per click then slide up/down (depending on open/close state)
-    // $(".trigger").click(function () {
-    //     $(this).toggleClass("active").next().slideToggle("slow");
-    //     return false; //Prevent the browser jump to the link anchor
-    // });
-
-    // // Loaded Images Function
-    // var $tiles = $('#tiles'),
-    //     $handler = $('li', $tiles),
-    //     $main = $('#main'),
-    //     $window = $(window),
-    //     $document = $(document),
-    //     options = {
-    //         autoResize: true, // This will auto-update the layout when the browser window is resized.
-    //         container: $main, // Optional, used for some extra CSS styling
-    //         offset: 20, // Optional, the distance between grid items
-    //         itemWidth: 280 // Optional, the width of a grid item
-    //     };
-    //
-    // /**
-    //  * Reinitializes the wookmark handler after all images have loaded
-    //  */
-    // function applyLayout() {
-    //     $tiles.imagesLoaded(function () {
-    //         // Destroy the old handler
-    //         if ($handler.wookmarkInstance) {
-    //             $handler.wookmarkInstance.clear();
-    //         }
-    //
-    //         // Create a new layout handler.
-    //         $handler = $('li', $tiles);
-    //         $handler.wookmark(options);
-    //     });
-    // }
-
     // Get the result of tweet
     socket.on("resultTweet", function (data) {
         var tweetObject = data;
@@ -331,7 +288,6 @@ $(document).ready(function () {
                 }
 
                 // Add topic count to data set of Bar Chart (Bar Chart)
-                // barChartData.datasets[0].data[i] = tweetTopics[i].topicTotalTweetCount;
                 barChartData.datasets[0].data[i] = tweetTopics[i].topicNegativeTweetCount;
                 barChartData.datasets[1].data[i] = tweetTopics[i].topicNeutralTweetCount;
                 barChartData.datasets[2].data[i] = tweetTopics[i].topicPositiveTweetCount;
@@ -343,7 +299,7 @@ $(document).ready(function () {
         barChart.update();
 
         // Print out the tweet
-        var FormattedTweets = '<div class="col-lg-6 col-md-6 col-sm-6">' +
+        var FormattedTweets = '<div class="col-lg-6 col-md-12 col-sm-12">' +
             '<div class="card">' +
             '<div class="card-body">' +
             '<div class="container">' +
@@ -366,9 +322,8 @@ $(document).ready(function () {
             '<div class="row text-muted">' +
             '<p>' + tweetObject.text + '</p>' +
             '</div>' +
-            '<div class="row" style="background-color:' + tweetObject.color + '">' +
-            '<p5>Rating: ' + tweetObject.rating + '</p5>' +
-            '<p5>User friend count: ' + tweetObject.friendCount + '</p5>' +
+            '<div class="row text-primary">' +
+            '<span class="fa fa-star" style="color:' + tweetObject.color + '"><b class="text-dark"> Rating  : ' + tweetObject.rating + '</b></span>' +
             '</div>' +
             '</div>' +
             '</div>' +
@@ -407,36 +362,18 @@ $(document).ready(function () {
     });
 });
 
-// Bind the enter key to start the tweet query searching method
-// function enterBindKey(event) {
-//     if (event.keyCode == 13) {
-//         searchTweet();
-//     }
-// }
-
-//Query for particular tag of tweet
+// Query for particular tag of tweet
 function searchTagTweet(value) {
-    // Get the search value
-    // var SearchValue = document.getElementById('tweetInputText').value;
-
     //Invoke the socket to search the particular tweet
     if (value !== '') {
         socket.emit("searchTagTweet", value);
     }
 }
 
-//Remove particular of tag of tweet
+// Remove particular of tag of tweet
 function removeTagTweet(value) {
     socket.emit("removeTagTweet", value);
 }
-
-// function removeAll() {
-//     $tiles = $('#tiles');
-//     socket.emit("clearAllTag", "");
-//     $tiles.empty();
-//     applyLayout();
-// }
-
 
 // Every seconds run this
 function tick() {
