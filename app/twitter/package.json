@@ -25,7 +25,8 @@
     "s3-bucket-empty": "0.0.2",
     "sentiment": "^4.0.1",
     "socket.io": "^2.0.3",
-    "twitter": "^1.7.1"
+    "twitter": "^1.7.1",
+    "twitter-stream-channels": "^1.0.0"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"
