@@ -42,6 +42,9 @@ var $ = jQuery.noConflict();
 // Connect to the socket
 socket.emit("connected");
 
+// Tweet tile count
+var tweetTileCount = 0;
+
 // Chart JS Live Charts
 // Total Tweet Activity Counts
 var totalTweetActivity = {
@@ -51,8 +54,8 @@ var totalTweetActivity = {
     positiveTweetCount: 0
 };
 
-// Tweet Activity Counts
-var tweetActivity = {
+// Tweet Activity Counts (Line Chart)
+var lineTweetActivity = {
     totalTweetCount: 0,
     negativeTweetCount: 0,
     neutralTweetCount: 0,
@@ -65,7 +68,7 @@ var colorNegativeTweet = "#ff1100";
 var colorNeutralTweet = "#fffd00";
 var colorPositiveTweet = "#00c869";
 
-var tweetTopics = [];
+var bartTweetTopics = []; // Tweet topics (Bar Chart)
 
 // Chart JS Config (Line Chart)
 var lineChartData = {
@@ -208,12 +211,32 @@ $(function () {
 
     // Clear chart (Bar Chart)
     $('#clearChartTopic').click(function () {
-        tweetTopics.splice(0, tweetTopics.length);
+        bartTweetTopics.splice(0, bartTweetTopics.length);
         barChartData.labels.splice(0, barChartData.labels.length);
         barChartData.datasets[0].data.splice(0, barChartData.datasets[0].data.length);
         barChartData.datasets[1].data.splice(0, barChartData.datasets[1].data.length);
         barChartData.datasets[2].data.splice(0, barChartData.datasets[2].data.length);
         barChart.update();
+    });
+
+    // Clear tweet stream
+    $('#clearTweetCount').click(function () {
+        totalTweetActivity.totalTweetCount = 0;
+        totalTweetActivity.negativeTweetCount = 0;
+        totalTweetActivity.neutralTweetCount = 0;
+        totalTweetActivity.positiveTweetCount = 0;
+        var updateOverallSentiment = "<div class=\"card-header\" id=\"overallSentiment\">\n" +
+            "<b>Overall Sentiment: </b>\n" +
+            "</div>";
+
+        // Update the overall tweets counts
+        $('#totalTweetCount b').text(totalTweetActivity.totalTweetCount);
+        $('#negativeTweetCount b').text(totalTweetActivity.negativeTweetCount);
+        $('#neutralTweetCount b').text(totalTweetActivity.neutralTweetCount);
+        $('#positiveTweetCount b').text(totalTweetActivity.positiveTweetCount);
+
+        // Update the overall sentiment status
+        $('#overallSentiment').replaceWith(updateOverallSentiment);
     });
 
     // Add/Remove query keywords
@@ -227,7 +250,7 @@ $(document).ready(function () {
         var tweetObject = data;
 
         // Push topic (Bar Chart)
-        if (!tweetTopics.length) { // If no topics, add topic to chart
+        if (!bartTweetTopics.length) { // If no topics, add topic to chart
             var newTopic = {
                 topicName: tweetObject.topic,
                 topicTotalTweetCount: 1, // Increment topic count
@@ -235,15 +258,15 @@ $(document).ready(function () {
                 topicNeutralTweetCount: 0,
                 topicPositiveTweetCount: 0
             };
-            tweetTopics.push(newTopic);
+            bartTweetTopics.push(newTopic);
 
             // Add topic as new label (Bar Chart)
             barChartData.labels.push(tweetObject.topic);
         } else {
             var topicExisted = false;
-            for (var i = 0; i < tweetTopics.length; i++) {
+            for (var i = 0; i < bartTweetTopics.length; i++) {
                 // If topic already existed
-                if (tweetTopics[i].topicName === tweetObject.topic) {
+                if (bartTweetTopics[i].topicName === tweetObject.topic) {
                     topicExisted = true;
                     break;
                 }
@@ -256,7 +279,7 @@ $(document).ready(function () {
                     topicNeutralTweetCount: 0,
                     topicPositiveTweetCount: 0
                 };
-                tweetTopics.push(uniqueTopic);
+                bartTweetTopics.push(uniqueTopic);
 
                 // Add topic as new label (Bar Chart)
                 barChartData.labels.push(tweetObject.topic);
@@ -264,71 +287,39 @@ $(document).ready(function () {
         }
 
         // Increment sentiment by topic
-        for (var i = 0; i < tweetTopics.length; i++) {
-            if (tweetTopics[i].topicName === tweetObject.topic) {
+        for (var i = 0; i < bartTweetTopics.length; i++) {
+            if (bartTweetTopics[i].topicName === tweetObject.topic) {
                 // Increment tweet activity count
                 totalTweetActivity.totalTweetCount++;
-                tweetActivity.totalTweetCount++;
-                tweetTopics[i].topicTotalTweetCount++;
+                lineTweetActivity.totalTweetCount++;
+                bartTweetTopics[i].topicTotalTweetCount++;
 
                 if (tweetObject.emotion === "negative") {
                     totalTweetActivity.negativeTweetCount++;
-                    tweetActivity.negativeTweetCount++;
-                    tweetTopics[i].topicNegativeTweetCount++;
+                    lineTweetActivity.negativeTweetCount++;
+                    bartTweetTopics[i].topicNegativeTweetCount++;
 
                 } else if (tweetObject.emotion === "neutral") {
                     totalTweetActivity.neutralTweetCount++;
-                    tweetActivity.neutralTweetCount++;
-                    tweetTopics[i].topicNeutralTweetCount++;
+                    lineTweetActivity.neutralTweetCount++;
+                    bartTweetTopics[i].topicNeutralTweetCount++;
 
                 } else if (tweetObject.emotion === "positive") {
                     totalTweetActivity.positiveTweetCount++;
-                    tweetActivity.positiveTweetCount++;
-                    tweetTopics[i].topicPositiveTweetCount++;
+                    lineTweetActivity.positiveTweetCount++;
+                    bartTweetTopics[i].topicPositiveTweetCount++;
                 }
 
                 // Add topic count to data set of Bar Chart (Bar Chart)
-                barChartData.datasets[0].data[i] = tweetTopics[i].topicNegativeTweetCount;
-                barChartData.datasets[1].data[i] = tweetTopics[i].topicNeutralTweetCount;
-                barChartData.datasets[2].data[i] = tweetTopics[i].topicPositiveTweetCount;
+                barChartData.datasets[0].data[i] = bartTweetTopics[i].topicNegativeTweetCount;
+                barChartData.datasets[1].data[i] = bartTweetTopics[i].topicNeutralTweetCount;
+                barChartData.datasets[2].data[i] = bartTweetTopics[i].topicPositiveTweetCount;
                 break;
             }
         }
 
         // Update chart (Line Chart)
         barChart.update();
-
-        // Print out the tweet
-        var FormattedTweets = '<div class="col-lg-6 col-md-12 col-sm-12">' +
-            '<div class="card">' +
-            '<div class="card-body">' +
-            '<div class="container">' +
-            '<div class="row">' +
-            '<div class="col-lg-4 col-md-4 col-sm-4">' +
-            '<a href="' + tweetObject.profileUrl + '" target="_blank">' +
-            '<img src="' + tweetObject.profileImageUrl + '" class="rounded float-left" alt="No Image" style="height: 100px; width: 100%">' +
-            '</a>' +
-            '</div>' +
-            '<div class="col-lg-8 col-md-8 col-sm-8">' +
-            '<h3><a href="' + tweetObject.profileUrl + '" target="_blank">' +
-            tweetObject.userName + '</a></h3>' +
-            '<span class="text-muted">' + '@' + tweetObject.screenName + '</span>' +
-            '<br/>' +
-            '<span class="fa fa-calendar text-muted">' + ' ' + tweetObject.createdTime + '</span>' +
-            '<br/>' +
-            '<span class="fa fa-map-marker text-muted">' + ' ' + tweetObject.urlLocation + '</span>' +
-            '</div>' +
-            '</div>' +
-            '<div class="row text-muted">' +
-            '<p>' + tweetObject.text + '</p>' +
-            '</div>' +
-            '<div class="row text-primary">' +
-            '<span class="fa fa-star" style="color:' + tweetObject.color + '"><b class="text-dark"> Rating  : ' + tweetObject.rating + '</b></span>' +
-            '</div>' +
-            '</div>' +
-            '</div>' +
-            '</div>' +
-            '</div>';
 
         // Update the Overall Sentiment Status
         var overallSentiment = totalTweetActivity.positiveTweetCount - totalTweetActivity.negativeTweetCount;
@@ -348,8 +339,12 @@ $(document).ready(function () {
                 "</div>";
         }
 
-        // Display the printed tweet
-        $('#tweetTiles').append(FormattedTweets);
+        // Display the tweet streams, maximum of 20 per page
+        if (tweetTileCount >= 20) {
+            $('#tweetTiles div').first().remove();
+        }
+        $('#tweetTiles').append(tweetObject.formattedTweetsVisual);
+        tweetTileCount++;
 
         // Update the overall tweets counts
         $('#totalTweetCount b').text(totalTweetActivity.totalTweetCount);
@@ -412,19 +407,19 @@ function tick() {
 
             // Add tweet count to data set of Line Chart (Line Chart)
             lineChartData.labels.push(currentTime);
-            lineChartData.datasets[0].data.push(tweetActivity.totalTweetCount);
-            lineChartData.datasets[1].data.push(tweetActivity.negativeTweetCount);
-            lineChartData.datasets[2].data.push(tweetActivity.neutralTweetCount);
-            lineChartData.datasets[3].data.push(tweetActivity.positiveTweetCount);
+            lineChartData.datasets[0].data.push(lineTweetActivity.totalTweetCount);
+            lineChartData.datasets[1].data.push(lineTweetActivity.negativeTweetCount);
+            lineChartData.datasets[2].data.push(lineTweetActivity.neutralTweetCount);
+            lineChartData.datasets[3].data.push(lineTweetActivity.positiveTweetCount);
 
             // Update chart (Line Chart)
             lineChart.update();
 
             // Refresh tweet count
-            tweetActivity.totalTweetCount = 0;
-            tweetActivity.negativeTweetCount = 0;
-            tweetActivity.neutralTweetCount = 0;
-            tweetActivity.positiveTweetCount = 0;
+            lineTweetActivity.totalTweetCount = 0;
+            lineTweetActivity.negativeTweetCount = 0;
+            lineTweetActivity.neutralTweetCount = 0;
+            lineTweetActivity.positiveTweetCount = 0;
         }
     }, 1000);
 }

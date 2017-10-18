@@ -47,7 +47,7 @@
 <header class="bg-primary text-white">
     <div class="container text-center">
         <h1>Twitter Streams Sentiment Analysis </h1>
-        <p class="lead">A sentiment analysis web application of Real-time Twitter Stream.</p>
+        <p class="lead">A sentiment analysis web application of Real-Time Twitter Stream.</p>
     </div>
 </header>
 
@@ -56,7 +56,7 @@
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <div class="container text-center">
-                    <h5>Enter a keywords.</h5>
+                    <h5>Enter keywords.</h5>
                 </div>
                 <div class="input-group" id="adv-search">
                     <span class="input-group-addon fa fa-search" id="search-addon"></span>
@@ -144,14 +144,24 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-6 mx-auto">
+        <div class="row justify-content-end">
+            <div class="col-lg-6">
                 <!-- Overall Sentiment Status -->
                 <div class="card text-center text-dark">
                     <div class="card-header" id="overallSentiment">
                         <b>Overall Sentiment: </b>
                     </div>
                 </div>
+            </div>
+            <div class="col-lg-3">
+                <!-- Reset the Tweet Stream Count -->
+                <button class="btn btn-danger" id="clearTweetCount">Clear Tweet Counts</button>
+                <!--<div class="card text-center text-dark">-->
+                    <!--<div class="card-header" id="overallSentiment">-->
+                        <!---->
+                        <!--<b>Overall Sentiment: </b>-->
+                    <!--</div>-->
+                <!--</div>-->
             </div>
         </div>
     </div>
