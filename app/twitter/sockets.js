@@ -54,17 +54,20 @@ module.exports = function (io) {
 
         // Disconnect/Close Connection of socket between server and client when browser close/refresh web page
         socket.on("disconnect", function () {
-            // Remove all tags in this particular socket
-            socket.searchMultipleTags.splice(0, socket.searchMultipleTags.length);
+            // If something inside socket tags
+            if (socket.searchMultipleTags.length !== 0) {
+                // Remove all tags in this particular socket
+                socket.searchMultipleTags.splice(0, socket.searchMultipleTags.length);
 
-            // Push updated tags into the channel (Twitter-Stream-Channels)
-            console.log("Current of All Channel Tags ", channels);
-            channels[socket.id] = socket.searchMultipleTags;
-            delete channels[socket.id];
-            console.log("Updated of All Channel Tags ", channels);
+                // Push updated tags into the channel (Twitter-Stream-Channels)
+                console.log("Current of All Channel Tags ", channels);
+                channels[socket.id] = socket.searchMultipleTags;
+                delete channels[socket.id];
+                console.log("Updated of All Channel Tags ", channels);
 
-            // Update stream channel (Twitter-Stream-Channels)
-            changeTweetStreamTag();
+                // Update stream channel (Twitter-Stream-Channels), only when necessary
+                changeTweetStreamTag();
+            }
 
             // Indicate user has disconnected
             console.log("User " + socket.id + " disconnected");
@@ -73,6 +76,10 @@ module.exports = function (io) {
                 numUsers = 0;
             }
             console.log("User currently online: " + numUsers);
+
+            // Timeout for a while
+            setTimeout(function () {
+            }, 500);
         });
 
         // Search the tweets
@@ -133,37 +140,49 @@ module.exports = function (io) {
         stream = clientTweetChannels.streamChannels({track: channels});
         stream.on('channels', function (tweet) {
             // Stream tweets with keywords in the channels object
-            console.log(tweet.$channels);
             sortIncomingTweetStream(tweet.$channels, tweet); // tweet object
         });
     }
 
     // Sort the tweets coming out from the tweet stream for all online sockets (Twitter-Stream-Channels)
     function sortIncomingTweetStream(channels, tweet) {
-        // Allocate topic and channels to tweet object
-        var topic;
-        for (var id in channels) {
-            topic = channels[id][0];
-            break;
+        // Allocate channels to tweet object
+        tweet["channels"] = channels;
+
+        if (Object.keys(channels).length === 0) { // If there no property in channels
+            // Store tweet to S3 (storing just for the sake of generating load)
+            storeRawTweet(tweet);
+        } else {
+            console.log(tweet.channels);
+            // { '43_H0J9e8HGhAFPXAAAC': [ 'trump', 'obama' ],
+            //    BCiudZFazZjB4b81AAAD: [ 'trump' ] }
+
+            // Single tweet split into different socket channels
+            for (var id in channels) {
+                console.log("Pre-process socket: ",id);
+
+                // Single tweet with more than one topics for a single channel is duplicated
+                for (var tag in channels[id]) {
+                    console.log("Pre-process topic: ",channels[id][tag]);
+
+                    // Parse tweets (and display to the front)
+                    ParseRawTweet(tweet,id,channels[id][tag]);
+                }
+            }
+
+            // Store tweet to S3 (storing just for the sake of generating load)
+            storeRawTweet(tweet);
         }
-        tweet["topic"] = topic;
-        tweet["channel"] = channels;
-
-        // Parse tweets (and display to the front)
-        ParseRawTweet(tweet);
-
-        // Store tweet to S3 (storing just for the sake of generating load)
-        storeRawTweet(tweet);
     }
 
     // Parsing of raw tweet
-    function ParseRawTweet(tweet) {
+    function ParseRawTweet(tweet,socket_id,topic) {
         // Parse tweet
         var profileUrl = "https://twitter.com/" + tweet.user.screen_name;
         var createdTime = tweet.created_at;
         var bannerUrl = tweet.user.profile_banner_url;
         var urlLocation = tweet.user.location;
-        var topic = tweet.topic;
+        var topic = topic;
 
         // Set tweet banner
         if (typeof bannerUrl === 'undefined') {
@@ -252,7 +271,8 @@ module.exports = function (io) {
                 emotion: emotion,
                 friendCount: tweet.user.friends_count,
                 topic: topic,
-                channel: tweet.channel,
+                channels: tweet.channels,
+                socketID: socket_id,
                 formattedTweetsVisual: FormattedTweetsVisual
             };
 
@@ -262,13 +282,18 @@ module.exports = function (io) {
     }
 
     // Display of tweet
-    function DisplayOfTweet(tweet) {
-        for (var id in tweet.channel) {
-            // Get id of the socket
-            var socket = ns.connected[id];
+    function DisplayOfTweet(tweetObject) {
+        // Get id of the socket
+        var socket = ns.connected[tweetObject.socketID];
+
+        // Sometimes user will disconnect when the tweet is emit to the front
+        // and the socket becomes null/undefined
+        if(socket){ // Check if socket still exist
+            console.log("Topic :", tweetObject.topic);
+            console.log("Display socket:", socket.id);
 
             // Pass tweet object to the front
-            socket.emit("resultTweet", tweet);
+            socket.emit("resultTweet", tweetObject);
         }
     }
 
@@ -289,7 +314,7 @@ module.exports = function (io) {
                 console.log(err, err.stack); // an error occurred
             }
             else {
-                console.log("Successfully stored the data with " + uniqueKey + " : ", data); // successful response
+                // console.log("Successfully stored the data with " + uniqueKey + " : ", data); // successful response
 
                 // Fetch tweet from S3
                 retrieveRawTweet(uniqueKey);
@@ -315,7 +340,7 @@ module.exports = function (io) {
             if (err) {
                 console.log(err, err.stack); // an error occurred
             } else {
-                console.log("Successfully fetched the data with " + uniqueKey + " : ", data.ETag); // successful response
+                // console.log("Successfully fetched the data with " + uniqueKey + " : ", data.ETag); // successful response
                 var tweet = JSON.parse(data.Body.toString());
 
                 // Parse stored raw tweet
@@ -344,7 +369,7 @@ module.exports = function (io) {
         var createdTime = tweet.created_at;
         var bannerUrl = tweet.user.profile_banner_url;
         var urlLocation = tweet.user.location;
-        var topic = tweet.topic;
+        var topic = "None (Storing)";
 
         // Set tweet banner
         if (typeof bannerUrl === 'undefined') {
@@ -432,8 +457,7 @@ module.exports = function (io) {
                 color: color,
                 emotion: emotion,
                 friendCount: tweet.user.friends_count,
-                topic: topic,
-                channel: tweet.channel,
+                channels: tweet.channels,
                 formattedTweetsVisual: FormattedTweetsVisual
             };
 
@@ -459,7 +483,7 @@ module.exports = function (io) {
                 console.log(err, err.stack); // an error occurred
             }
             else {
-                console.log("Successfully stored the data with " + uniqueKey + " : ", data); // successful response
+                // console.log("Successfully stored the data with " + uniqueKey + " : ", data); // successful response
 
                 // Fetch tweet from S3
                 retrieveCookedTweet(uniqueKey);
@@ -485,7 +509,7 @@ module.exports = function (io) {
             if (err) {
                 console.log(err, err.stack); // an error occurred
             } else {
-                console.log("Successfully fetched the data with " + uniqueKey + " : ", data.ETag); // successful response
+                // console.log("Successfully fetched the data with " + uniqueKey + " : ", data.ETag); // successful response
                 var tweet = JSON.parse(data.Body.toString());
             }
             /*
