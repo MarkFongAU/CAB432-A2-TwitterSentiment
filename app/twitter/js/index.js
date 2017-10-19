@@ -339,11 +339,65 @@ $(document).ready(function () {
                 "</div>";
         }
 
+        // var tweetObject = {
+        //     id: tweet.id_str,
+        //     userName: tweet.user.name,
+        //     screenName: tweet.user.screen_name,
+        //     profileUrl: profileUrl,
+        //     profileImageUrl: tweet.user.profile_image_url,
+        //     createdTime: createdTime,
+        //     bannerUrl: bannerUrl,
+        //     urlLocation: urlLocation,
+        //     text: fullText,
+        //     rating: rating,
+        //     color: color,
+        //     emotion: emotion,
+        //     friendCount: tweet.user.friends_count,
+        //     topic: topic
+        // };
+
+        // Print out the tweet
+        var FormattedTweetsVisual = '<div class="col-lg-6 col-md-12 col-sm-12">' +
+            '<div class="card">' +
+            '<div class="card-body">' +
+            '<div class="container">' +
+            '<div class="row">' +
+            '<div class="col-lg-4 col-md-4 col-sm-4">' +
+            '<a href="' + tweetObject.profileUrl + '" target="_blank">' +
+            '<img src="' + tweetObject.profileImageUrl + '" class="rounded float-left" alt="No Image" style="height: 100px; width: 100%">' +
+            '</a>' +
+            '</div>' +
+            '<div class="col-lg-8 col-md-8 col-sm-8">' +
+            '<h3><a href="' + tweetObject.profileUrl + '" target="_blank">' +
+            tweetObject.userName + '</a></h3>' +
+            '<span class="text-muted">' + '@' + tweetObject.screenName + '</span>' +
+            '<br/>' +
+            '<span class="fa fa-calendar text-muted">' + ' ' + tweetObject.createdTime + '</span>' +
+            '<br/>' +
+            '<span class="fa fa-map-marker text-muted">' + ' ' + tweetObject.urlLocation + '</span>' +
+            '</div>' +
+            '</div>' +
+            '<div class="row text-muted">' +
+            '<p>' + tweetObject.text + '</p>' +
+            '</div>' +
+            '<div class="row text-primary">' +
+            '<div class="col-lg-6 col-md-6 col-sm-6">' +
+            '<span class="fa fa-star" style="color:' + tweetObject.color + '"><b class="text-dark"> Rating  : ' + tweetObject.rating + '</b></span>' +
+            '</div>' +
+            '<div class="col-lg-6 col-md-6 col-sm-6">' +
+            '<span class="fa fa-comments "><b class="text-dark"> Topic : ' + tweetObject.topic + ' </b></span>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+
         // Display the tweet streams, maximum of 20 per page
         if (tweetTileCount >= 20) {
             $('#tweetTiles div').first().remove();
         }
-        $('#tweetTiles').append(tweetObject.formattedTweetsVisual);
+        $('#tweetTiles').append(FormattedTweetsVisual);
         tweetTileCount++;
 
         // Update the overall tweets counts
