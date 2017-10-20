@@ -1,0 +1,21 @@
+{
+  "name": "twitter-sentiment-server",
+  "version": "1.0.0",
+  "description": "A sentiment analysing server on twitter stream",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/www"
+  },
+  "author": "Mark YeeChen Fong",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.137.0",
+    "body-parser": "^1.18.2",
+    "cookie-parser": "^1.4.3",
+    "dateformat": "^3.0.2",
+    "express": "^4.16.2",
+    "path": "^0.12.7",
+    "sentiment": "^4.1.0"
+  }
+}
