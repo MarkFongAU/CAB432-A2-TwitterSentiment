@@ -1,0 +1,15 @@
+{
+  "name": "twitter-sentiment-stream",
+  "version": "1.0.0",
+  "description": "A Twitter Sentiment stream",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Mark YeeChen Fong",
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.83.0",
+    "twit": "^2.2.9"
+  }
+}
