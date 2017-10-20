@@ -248,11 +248,12 @@ $(document).ready(function () {
     // Get the result of tweet
     socket.on("resultTweet", function (data) {
         var tweetObject = data;
+        console.log(tweetObject);
 
         // Push topic (Bar Chart)
         if (!bartTweetTopics.length) { // If no topics, add topic to chart
             var newTopic = {
-                topicName: tweetObject.topic,
+                topicName: tweetObject.topic, // Possible to have more than 1 topic per tweet
                 topicTotalTweetCount: 1, // Increment topic count
                 topicNegativeTweetCount: 0,
                 topicNeutralTweetCount: 0,

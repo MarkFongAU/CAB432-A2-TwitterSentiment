@@ -1,5 +1,5 @@
 {
-  "name": "restaurant",
+  "name": "twitter-sentiment-app",
   "version": "1.0.0",
   "description": "A sentiment analysing web application on twitter stream",
   "main": "app.js",
