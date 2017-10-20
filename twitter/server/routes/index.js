@@ -21,6 +21,11 @@ router.use(function (req, res, next) {
     next();
 });
 
+// GET health check
+router.get('/', function (req, res) {
+    console.log("AWS Load Balancer Health Check here");
+});
+
 // Receive POST from twitter stream
 router.post('/', function (req, res) {
     ParseRawTweet(req.body);
