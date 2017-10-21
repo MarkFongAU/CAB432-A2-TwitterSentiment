@@ -248,7 +248,7 @@ $(document).ready(function () {
     // Get the result of tweet
     socket.on("resultTweet", function (data) {
         var tweetObject = data;
-        console.log(tweetObject);
+        // console.log(tweetObject);
 
         // Push topic (Bar Chart)
         if (!bartTweetTopics.length) { // If no topics, add topic to chart
@@ -291,23 +291,32 @@ $(document).ready(function () {
         for (var i = 0; i < bartTweetTopics.length; i++) {
             if (bartTweetTopics[i].topicName === tweetObject.topic) {
                 // Increment tweet activity count
-                totalTweetActivity.totalTweetCount++;
-                lineTweetActivity.totalTweetCount++;
+                if(tweetObject.hasTopics){ // Only increment total and line when the tweet has a ll the topics
+                    totalTweetActivity.totalTweetCount++;
+                    lineTweetActivity.totalTweetCount++;
+                }
                 bartTweetTopics[i].topicTotalTweetCount++;
 
                 if (tweetObject.emotion === "negative") {
-                    totalTweetActivity.negativeTweetCount++;
-                    lineTweetActivity.negativeTweetCount++;
+                    if(tweetObject.hasTopics){ // Only increment total and line when the tweet has a ll the topics
+                        totalTweetActivity.negativeTweetCount++;
+                        lineTweetActivity.negativeTweetCount++;
+                    }
                     bartTweetTopics[i].topicNegativeTweetCount++;
 
                 } else if (tweetObject.emotion === "neutral") {
-                    totalTweetActivity.neutralTweetCount++;
-                    lineTweetActivity.neutralTweetCount++;
+                    if(tweetObject.hasTopics){ // Only increment total and line when the tweet has a ll the topics
+                        totalTweetActivity.neutralTweetCount++;
+                        lineTweetActivity.neutralTweetCount++;
+                    }
+
                     bartTweetTopics[i].topicNeutralTweetCount++;
 
                 } else if (tweetObject.emotion === "positive") {
-                    totalTweetActivity.positiveTweetCount++;
-                    lineTweetActivity.positiveTweetCount++;
+                    if(tweetObject.hasTopics){ // Only increment total and line when the tweet has a ll the topics
+                        totalTweetActivity.positiveTweetCount++;
+                        lineTweetActivity.positiveTweetCount++;
+                    }
                     bartTweetTopics[i].topicPositiveTweetCount++;
                 }
 
@@ -319,96 +328,110 @@ $(document).ready(function () {
             }
         }
 
-        // Update chart (Line Chart)
+        // Update chart (Bar Chart)
         barChart.update();
 
-        // Update the Overall Sentiment Status
-        var overallSentiment = totalTweetActivity.positiveTweetCount - totalTweetActivity.negativeTweetCount;
-        var updateOverallSentiment = "";
+        // Only increment, update when the tweet has all the topics, since only the bar chart
+        // increment every time a tweet with a single topic comes in.
+        if(tweetObject.hasTopics){ // Only increment total and line when the tweet has a ll the topics
+            // Update the Overall Sentiment Status
+            var overallSentiment = totalTweetActivity.positiveTweetCount - totalTweetActivity.negativeTweetCount;
+            var updateOverallSentiment = "";
 
-        if (overallSentiment < 0) {
-            updateOverallSentiment = "<div class=\"card-header\" id=\"overallSentiment\">\n" +
-                "<b>Overall Sentiment: </b><b style=\"color: #ff1100\">Negative</b>\n" +
-                "</div>";
-        } else if (overallSentiment === 0) {
-            updateOverallSentiment = "<div class=\"card-header\" id=\"overallSentiment\">\n" +
-                "<b>Overall Sentiment: </b><b style=\"color: #fffd00\">Neutral</b>\n" +
-                "</div>";
-        } else if (overallSentiment > 0) {
-            updateOverallSentiment = "<div class=\"card-header\" id=\"overallSentiment\">\n" +
-                "<b>Overall Sentiment: </b><b style=\"color: #00c869\">Positive</b>\n" +
-                "</div>";
+            if (overallSentiment < 0) {
+                updateOverallSentiment = "<div class=\"card-header\" id=\"overallSentiment\">\n" +
+                    "<b>Overall Sentiment: </b><b style=\"color: #ff1100\">Negative</b>\n" +
+                    "</div>";
+            } else if (overallSentiment === 0) {
+                updateOverallSentiment = "<div class=\"card-header\" id=\"overallSentiment\">\n" +
+                    "<b>Overall Sentiment: </b><b style=\"color: #fffd00\">Neutral</b>\n" +
+                    "</div>";
+            } else if (overallSentiment > 0) {
+                updateOverallSentiment = "<div class=\"card-header\" id=\"overallSentiment\">\n" +
+                    "<b>Overall Sentiment: </b><b style=\"color: #00c869\">Positive</b>\n" +
+                    "</div>";
+            }
+
+            var printTopicsString = "";
+            for (var i = 0; i < tweetObject.topics.length; i++){
+                if (i === (tweetObject.topics.length - 1)) { // Last topic in the tweet
+                    printTopicsString += tweetObject.topics[i];
+                } else {
+                    printTopicsString += tweetObject.topics[i] + ", ";
+                }
+            }
+            // var tweetObject = {
+            //     id: tweet.id_str,
+            //     userName: tweet.user.name,
+            //     screenName: tweet.user.screen_name,
+            //     profileUrl: profileUrl,
+            //     profileImageUrl: tweet.user.profile_image_url,
+            //     createdTime: createdTime,
+            //     bannerUrl: bannerUrl,
+            //     urlLocation: urlLocation,
+            //     text: fullText,
+            //     rating: rating,
+            //     color: color,
+            //     emotion: emotion,
+            //     friendCount: tweet.user.friends_count,
+            //     topic: topic
+            //     hasTopics: true,
+            //     topics: topics
+            // };
+
+            // Print out the tweet
+            var FormattedTweetsVisual = '<div class="col-lg-6 col-md-12 col-sm-12">' +
+                '<div class="card">' +
+                '<div class="card-body">' +
+                '<div class="container">' +
+                '<div class="row">' +
+                '<div class="col-lg-4 col-md-4 col-sm-4">' +
+                '<a href="' + tweetObject.profileUrl + '" target="_blank">' +
+                '<img src="' + tweetObject.profileImageUrl + '" class="rounded float-left" alt="No Image" style="height: 100px; width: 100%">' +
+                '</a>' +
+                '</div>' +
+                '<div class="col-lg-8 col-md-8 col-sm-8">' +
+                '<h3><a href="' + tweetObject.profileUrl + '" target="_blank">' +
+                tweetObject.userName + '</a></h3>' +
+                '<span class="text-muted">' + '@' + tweetObject.screenName + '</span>' +
+                '<br/>' +
+                '<span class="fa fa-calendar text-muted">' + ' ' + tweetObject.createdTime + '</span>' +
+                '<br/>' +
+                '<span class="fa fa-map-marker text-muted">' + ' ' + tweetObject.urlLocation + '</span>' +
+                '</div>' +
+                '</div>' +
+                '<div class="row text-muted">' +
+                '<p>' + tweetObject.text + '</p>' +
+                '</div>' +
+                '<div class="row text-primary">' +
+                '<div class="col-lg-6 col-md-6 col-sm-6">' +
+                '<span class="fa fa-star" style="color:' + tweetObject.color + '"><b class="text-dark"> Rating  : ' + tweetObject.rating + '</b></span>' +
+                '</div>' +
+                '<div class="col-lg-6 col-md-6 col-sm-6">' +
+                '<span class="fa fa-comments "><b class="text-dark"> Topic : ' + printTopicsString + ' </b></span>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+
+            // Display the tweet streams, maximum of 20 per page
+            if (tweetTileCount >= 20) {
+                $('#tweetTiles div').first().remove();
+            }
+            $('#tweetTiles').append(FormattedTweetsVisual);
+            tweetTileCount++;
+
+            // Update the overall tweets counts
+            $('#totalTweetCount b').text(totalTweetActivity.totalTweetCount);
+            $('#negativeTweetCount b').text(totalTweetActivity.negativeTweetCount);
+            $('#neutralTweetCount b').text(totalTweetActivity.neutralTweetCount);
+            $('#positiveTweetCount b').text(totalTweetActivity.positiveTweetCount);
+
+            // Update the overall sentiment status
+            $('#overallSentiment').replaceWith(updateOverallSentiment);
         }
-
-        // var tweetObject = {
-        //     id: tweet.id_str,
-        //     userName: tweet.user.name,
-        //     screenName: tweet.user.screen_name,
-        //     profileUrl: profileUrl,
-        //     profileImageUrl: tweet.user.profile_image_url,
-        //     createdTime: createdTime,
-        //     bannerUrl: bannerUrl,
-        //     urlLocation: urlLocation,
-        //     text: fullText,
-        //     rating: rating,
-        //     color: color,
-        //     emotion: emotion,
-        //     friendCount: tweet.user.friends_count,
-        //     topic: topic
-        // };
-
-        // Print out the tweet
-        var FormattedTweetsVisual = '<div class="col-lg-6 col-md-12 col-sm-12">' +
-            '<div class="card">' +
-            '<div class="card-body">' +
-            '<div class="container">' +
-            '<div class="row">' +
-            '<div class="col-lg-4 col-md-4 col-sm-4">' +
-            '<a href="' + tweetObject.profileUrl + '" target="_blank">' +
-            '<img src="' + tweetObject.profileImageUrl + '" class="rounded float-left" alt="No Image" style="height: 100px; width: 100%">' +
-            '</a>' +
-            '</div>' +
-            '<div class="col-lg-8 col-md-8 col-sm-8">' +
-            '<h3><a href="' + tweetObject.profileUrl + '" target="_blank">' +
-            tweetObject.userName + '</a></h3>' +
-            '<span class="text-muted">' + '@' + tweetObject.screenName + '</span>' +
-            '<br/>' +
-            '<span class="fa fa-calendar text-muted">' + ' ' + tweetObject.createdTime + '</span>' +
-            '<br/>' +
-            '<span class="fa fa-map-marker text-muted">' + ' ' + tweetObject.urlLocation + '</span>' +
-            '</div>' +
-            '</div>' +
-            '<div class="row text-muted">' +
-            '<p>' + tweetObject.text + '</p>' +
-            '</div>' +
-            '<div class="row text-primary">' +
-            '<div class="col-lg-6 col-md-6 col-sm-6">' +
-            '<span class="fa fa-star" style="color:' + tweetObject.color + '"><b class="text-dark"> Rating  : ' + tweetObject.rating + '</b></span>' +
-            '</div>' +
-            '<div class="col-lg-6 col-md-6 col-sm-6">' +
-            '<span class="fa fa-comments "><b class="text-dark"> Topic : ' + tweetObject.topic + ' </b></span>' +
-            '</div>' +
-            '</div>' +
-            '</div>' +
-            '</div>' +
-            '</div>' +
-            '</div>';
-
-        // Display the tweet streams, maximum of 20 per page
-        if (tweetTileCount >= 20) {
-            $('#tweetTiles div').first().remove();
-        }
-        $('#tweetTiles').append(FormattedTweetsVisual);
-        tweetTileCount++;
-
-        // Update the overall tweets counts
-        $('#totalTweetCount b').text(totalTweetActivity.totalTweetCount);
-        $('#negativeTweetCount b').text(totalTweetActivity.negativeTweetCount);
-        $('#neutralTweetCount b').text(totalTweetActivity.neutralTweetCount);
-        $('#positiveTweetCount b').text(totalTweetActivity.positiveTweetCount);
-
-        // Update the overall sentiment status
-        $('#overallSentiment').replaceWith(updateOverallSentiment);
     });
 });
 

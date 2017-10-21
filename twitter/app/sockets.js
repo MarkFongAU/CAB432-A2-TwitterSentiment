@@ -107,31 +107,58 @@ module.exports = function (io) {
 
         // Get tweet stream
         serverEmitter.on("tweetStream", function (tweetObject) {
+            var topics = [];
             // Categories the type of tweet
             for (var i = 0; i < socket.searchMultipleTags.length; i++) {
                 if (tweetObject.text.indexOf(socket.searchMultipleTags[i]) !== -1) {
                     console.log("Topic running: ", socket.searchMultipleTags[i]);
+                    topics.push(socket.searchMultipleTags[i]);
+                    if (i === (socket.searchMultipleTags.length - 1)){ // Last topic in the tweet
+                        // Add topic to tweet object
+                        var tweetObjectWithTopics = {
+                            id: tweetObject.id,
+                            userName: tweetObject.userName,
+                            screenName: tweetObject.screenName,
+                            profileUrl: tweetObject.profileUrl,
+                            profileImageUrl: tweetObject.profileImageUrl,
+                            createdTime: tweetObject.createdTime,
+                            bannerUrl: tweetObject.bannerUrl,
+                            urlLocation: tweetObject.urlLocation,
+                            text: tweetObject.text,
+                            rating: tweetObject.rating,
+                            color: tweetObject.color,
+                            emotion: tweetObject.emotion,
+                            friendCount: tweetObject.friendCount,
+                            topic: socket.searchMultipleTags[i],
+                            hasTopics: true,
+                            topics: topics
+                        };
 
-                    // Add topic to tweet object
-                    var tweetObjectWithTopic = {
-                        id: tweetObject.id,
-                        userName: tweetObject.userName,
-                        screenName: tweetObject.screenName,
-                        profileUrl: tweetObject.profileUrl,
-                        profileImageUrl: tweetObject.profileImageUrl,
-                        createdTime: tweetObject.createdTime,
-                        bannerUrl: tweetObject.bannerUrl,
-                        urlLocation: tweetObject.urlLocation,
-                        text: tweetObject.text,
-                        rating: tweetObject.rating,
-                        color: tweetObject.color,
-                        emotion: tweetObject.emotion,
-                        friendCount: tweetObject.friendCount,
-                        topic: socket.searchMultipleTags[i]
-                    };
+                        // Pass the tweet to the front-end
+                        DisplayOfTweet(tweetObjectWithTopics, socket.id);
+                    } else {
+                        // Add topic to tweet object
+                        var tweetObjectWithoutTopics = {
+                            id: tweetObject.id,
+                            userName: tweetObject.userName,
+                            screenName: tweetObject.screenName,
+                            profileUrl: tweetObject.profileUrl,
+                            profileImageUrl: tweetObject.profileImageUrl,
+                            createdTime: tweetObject.createdTime,
+                            bannerUrl: tweetObject.bannerUrl,
+                            urlLocation: tweetObject.urlLocation,
+                            text: tweetObject.text,
+                            rating: tweetObject.rating,
+                            color: tweetObject.color,
+                            emotion: tweetObject.emotion,
+                            friendCount: tweetObject.friendCount,
+                            topic: socket.searchMultipleTags[i],
+                            hasTopics: false
+                        };
 
-                    // Pass the tweet to the front-end
-                    DisplayOfTweet(tweetObjectWithTopic, socket.id);
+                        // Pass the tweet to the front-end
+                        DisplayOfTweet(tweetObjectWithoutTopics, socket.id);
+                    }
                 }
             }
         });
@@ -145,9 +172,11 @@ module.exports = function (io) {
         // Sometimes user will disconnect when the tweet is emit to the front
         // and the socket becomes null/undefined
         if (socket) { // Check if socket still exist
-            console.log("Display socket:", socket.id);
-            console.log("Topic :", tweetObject.topic);
-
+            //console.log("Display socket:", socket.id);
+            //console.log("Topic :", tweetObject.topic);
+            if (tweetObject.hasTopics){
+                console.log("Last topic of tweet: ", tweetObject.topics);
+            }
             // Pass tweet object to the front
             socket.emit("resultTweet", tweetObject);
         }
