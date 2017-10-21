@@ -17,10 +17,11 @@ var stream = T.stream('statuses/filter', {
 
 // Stream the tweets from Twitter via Twit Stream
 stream.on('tweet', function (tweet) {
+    console.log("Tweet here: ", tweet.id_str);
     // Pass the raw tweets to the load balancer address
     request({
-            // url: 'http://CAB432A2-LoadBalancer-64347381.us-west-2.elb.amazonaws.com/',
             url: 'http://CAB432A2-LoadBalancer-64347381.us-west-2.elb.amazonaws.com:3000/',
+            // url: 'http://localhost:3000/',
             method: 'POST',
             json: tweet
         }, function (err, res, body) {

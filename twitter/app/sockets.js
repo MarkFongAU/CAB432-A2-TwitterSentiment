@@ -135,36 +135,6 @@ module.exports = function (io) {
                 }
             }
         });
-
-        // serverEmitter.on("tweetStream", function (tweet) {
-        //     // Categories the type of tweet
-        //     if (tweet.hasOwnProperty('extended_tweet')) {
-        //         if (tweet.extended_tweet.full_text.indexOf(socket.searchMultipleTags[i]) !== -1) {
-        //             console.log("Topic running: ", socket.searchMultipleTags[i]);
-        //
-        //             // Parse the tweets
-        //             ParseRawTweet(tweet, tweet.extended_tweet.full_text, socket.id, socket.searchMultipleTags[i]);
-        //         }
-        //     } else if (tweet.hasOwnProperty('retweeted_status')) {
-        //         for (var i = 0; i < socket.searchMultipleTags.length; i++) {
-        //             if (tweet.retweeted_status.text.indexOf(socket.searchMultipleTags[i]) !== -1) {
-        //                 console.log("Topic running: ", socket.searchMultipleTags[i]);
-        //
-        //                 // Parse the tweets
-        //                 ParseRawTweet(tweet, tweet.retweeted_status.text, socket.id, socket.searchMultipleTags[i]);
-        //             }
-        //         }
-        //     } else {
-        //         for (var i = 0; i < socket.searchMultipleTags.length; i++) {
-        //             if (tweet.text.indexOf(socket.searchMultipleTags[i]) !== -1) {
-        //                 console.log("Topic running: ", socket.searchMultipleTags[i]);
-        //
-        //                 // Parse the tweets
-        //                 ParseRawTweet(tweet, tweet.text, socket.id, socket.searchMultipleTags[i]);
-        //             }
-        //         }
-        //     }
-        // });
     });
 
     // Display of tweet
@@ -196,12 +166,9 @@ module.exports = function (io) {
         //         ":t": oneSecondBeforeGetTime
         //     }
         // };
+
         console.log(nowGetTime, oneSecondBeforeGetTime);
 
-        // setting a dummy attribute as a partition key
-        // KeyConditionExpression: "stored_time > :time1 AND stored_time < :time2",
-        // #mid = :mid AND #time BETWEEN :sdate AND :edate
-        //
         var params = {
             TableName: tableName,
             IndexName: "dummy_attribute-stored_time-index",

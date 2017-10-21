@@ -28,6 +28,8 @@ router.get('/', function (req, res) {
 
 // Receive POST from twitter stream
 router.post('/', function (req, res) {
+    // Generate load through logging
+    console.log(req.body);
     ParseRawTweet(req.body);
 
     // Parsing of raw tweet
@@ -101,6 +103,8 @@ router.post('/', function (req, res) {
                 friendCount: tweet.user.friends_count
             };
 
+            // Generate load through logging
+            console.log(tweetObject);
             console.log(storedTimeGetTime);
             // Store tweet
             storeTweet(tweetObject, storedTimeGetTime);
@@ -123,6 +127,27 @@ router.post('/', function (req, res) {
                 console.log(err); // an error occurred
             } else {
                 console.log("Successfully stored the JSON with " + tweetObject.id + " at " + storedTimeGetTime + " : ", data); // successful response
+                console.log(tweetObject.id);
+                retrieveTweet(tweetObject.id);
+            }
+        });
+    }
+
+    // Retrieve tweet from AWS Dynamo DB, one tweet per call
+    function retrieveTweet(id) {
+        console.log(id);
+        // For the sake of generating load
+        var getParams = {
+            TableName: tableName,
+            Key:{
+                "tweet_id": id
+            }
+        };
+        docClient.get(getParams, function(err, data) {
+            if (err) {
+                console.log(err); // an error occurred
+            } else {
+                console.log("Successfully get the JSON with " + id + " : ", data.Item.object); // successful response
             }
         });
     }
