@@ -1,0 +1,1 @@
+This is YeeChen Fong and PengYuan Ge's (n9602976, n8936854) assignment, including a source code folder(seperated into 3 sections, app, server, stream), and a report(pdf version).
