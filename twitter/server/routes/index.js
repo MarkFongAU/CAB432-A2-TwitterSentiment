@@ -128,7 +128,7 @@ router.post('/', function (req, res) {
             } else {
                 console.log("Successfully stored the JSON with " + tweetObject.id + " at " + storedTimeGetTime + " : ", data); // successful response
                 console.log(tweetObject.id);
-                retrieveTweet(tweetObject.id);
+                //retrieveTweet(tweetObject.id);
             }
         });
     }
