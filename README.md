@@ -1,5 +1,5 @@
 # CAB432-A2-TwitterSentiment
-A Twitter Sentiment Analysis application which scales with the number of tweets coming in to the application.
+A Twitter Sentiment Analysis application which scales with the number of tweets coming in to the application, built with Express Node back-end and EJS front-end (Sentiment Analysis client).
 
 ## Setup and run the Stream server (in an AWS EC2 instance)
 Go into the `twitter/stream` folder, install the servers dependencies. Then, install PM2 and startup the node server. This can be done using the following commands:
