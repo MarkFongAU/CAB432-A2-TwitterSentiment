@@ -9,7 +9,8 @@
   "author": "Mark YeeChen Fong",
   "license": "ISC",
   "dependencies": {
-    "request": "^2.83.0",
-    "twit": "^2.2.9"
+    "hoek": "^6.0.1",
+    "request": "^2.88.0",
+    "twit": "^2.2.11"
   }
 }
