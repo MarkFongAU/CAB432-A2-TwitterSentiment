@@ -1,0 +1,7 @@
+# Ignore node_modules
+/twitter/app/node_modules
+/twitter/server/node_modules
+/twitter/stream/node_modules
+
+# Ignore vscode
+/.vscode

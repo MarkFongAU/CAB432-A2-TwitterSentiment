@@ -10,12 +10,12 @@
   "author": "Mark YeeChen Fong",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.137.0",
-    "body-parser": "^1.18.2",
+    "aws-sdk": "^2.348.0",
+    "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
-    "dateformat": "^3.0.2",
-    "express": "^4.16.2",
+    "dateformat": "^3.0.3",
+    "express": "^4.16.4",
     "path": "^0.12.7",
-    "sentiment": "^4.1.0"
+    "sentiment": "^4.2.0"
   }
 }
